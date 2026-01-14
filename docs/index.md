@@ -47,6 +47,7 @@ For more details, see the [Getting Started](#tutorials) section.
 **Fonts**
 
 Velocity platform **does not allow uploading font files**. You must use font families from the list of supported fonts provided by the platform. All fonts we provide can be downloaded for free from [Google Fonts](https://fonts.google.com/).
+
 [Here](#fonts) you can find the list of all font families currently supported by Velocity Platform.
 
 

@@ -53,7 +53,8 @@ If your composition contains **Text layers**, you must adjust Bodymovin’s text
 
 ![Configuring font export in the bodymovin plugin UI](images/uncheck_glyphs_bm.JPG)
 
-**Important note regarding fonts:** Due to strict copyright regulations around font usage (including fonts that may be unlicensed or licensed under unsuitable terms and conditions), we **do not allow uploading font files**. You must use font families from the list of supported fonts provided by the platform. All fonts we provide can be downloaded for free from [Google Fonts](https://fonts.google.com/).  
+**Important note regarding fonts:** Due to strict copyright regulations around font usage (including fonts that may be unlicensed or licensed under unsuitable terms and conditions), we **do not allow uploading font files**. You must use font families from the list of supported fonts provided by the platform. All fonts we provide can be downloaded for free from [Google Fonts](https://fonts.google.com/).
+
 [Here](#fonts) you can find the list of all font families currently supported by Velocity Platform.
 
 ---
