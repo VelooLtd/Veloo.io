@@ -63,12 +63,44 @@ Multipart/form-data with `file` field containing the ZIP binary.
 | 401 | Missing or invalid API key |
 | 413 | File size exceeds maximum allowed (2GB) |
 
-### Example using cURL
+### Example usage
 
+[code-tabs: cURL, JS (Fetch), JS (Axios)]
 ```bash
+# cURL
 curl -X POST https://api.veloo.io/template/upload \
   -H "X-API-Key: your-api-key" \
   -F "file=@template.zip"
+```
+```javascript
+// JavaScript (Fetch)
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+const response = await fetch('https://api.veloo.io/template/upload', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'your-api-key'
+  },
+  body: formData
+});
+
+const data = await response.json();
+console.log(data.templateId);
+```
+```javascript
+// JavaScript (Axios)
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+const response = await axios.post('https://api.veloo.io/template/upload', formData, {
+  headers: {
+    'X-API-Key': 'your-api-key',
+    'Content-Type': 'multipart/form-data'
+  }
+});
+
+console.log(response.data.templateId);
 ```
 
 ### Example Response
@@ -305,6 +337,38 @@ Poll this endpoint to monitor template processing progress after upload.
 | 200 | Status retrieved successfully |
 | 404 | Template job not found or not owned by current user |
 | 401 | Missing or invalid API key |
+
+### Example usage
+
+[code-tabs: cURL, JS (Fetch), JS (Axios)]
+```bash
+# cURL
+curl -H "X-API-Key: your-api-key" \
+  https://api.veloo.io/template/{templateId}/status
+```
+```javascript
+// JavaScript (Fetch)
+const templateId = 'your-template-id';
+const response = await fetch(`https://api.veloo.io/template/${templateId}/status`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
+});
+
+const data = await response.json();
+console.log(data.status); // "pending", "processing", "completed", "failed"
+```
+```javascript
+// JavaScript (Axios)
+const templateId = 'your-template-id';
+const response = await axios.get(`https://api.veloo.io/template/${templateId}/status`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
+});
+
+console.log(response.data.status);
+```
 
 ### Example Response (completed)
 
@@ -548,26 +612,46 @@ Stream the audio file directly to your client in the original format it was uplo
 
 ### Download Examples
 
-**cURL:**
+### Example usage
+
+[code-tabs: cURL, JS (Fetch), JS (Axios)]
 ```bash
+# cURL
 curl -H "X-API-Key: your-api-key" \
   -o audio.mp3 \
   https://api.veloo.io/audio/{audioId}/download
 ```
-
-**JavaScript:**
 ```javascript
-fetch(`https://api.veloo.io/audio/${audioId}/download`, {
-  headers: { 'X-API-Key': 'your-api-key' }
-})
-.then(response => response.blob())
-.then(blob => {
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'audio.mp3';
-  a.click();
+// JavaScript (Fetch)
+const audioId = 'your-audio-id';
+const response = await fetch(`https://api.veloo.io/audio/${audioId}/download`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
 });
+
+const blob = await response.blob();
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'audio.mp3';
+a.click();
+```
+```javascript
+// JavaScript (Axios)
+const audioId = 'your-audio-id';
+const response = await axios.get(`https://api.veloo.io/audio/${audioId}/download`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  },
+  responseType: 'blob'
+});
+
+const url = window.URL.createObjectURL(new Blob([response.data]));
+const a = document.createElement('a');
+a.href = url;
+a.download = 'audio.mp3';
+a.click();
 ```
 
 ---
@@ -795,6 +879,53 @@ Render a template directly without a campaign.
 4. Wait for audio processing to complete (poll `GET /audio/{audioId}/status`)
 5. Include the audioId in your render request
 
+### Example usage
+
+[code-tabs: cURL, JS (Fetch), JS (Axios)]
+```bash
+# cURL (Direct Mode)
+curl -X POST https://api.veloo.io/render \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "templateId": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "DirectVideo",
+    "encoderConfig": { "bitrate": 5000000 }
+  }'
+```
+```javascript
+// JavaScript (Fetch)
+const response = await fetch('https://api.veloo.io/render', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'your-api-key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    templateId: '550e8400-e29b-41d4-a716-446655440000',
+    name: 'DirectVideo',
+    encoderConfig: { bitrate: 5000000 }
+  })
+});
+
+const data = await response.json();
+console.log(data.renderId);
+```
+```javascript
+// JavaScript (Axios)
+const response = await axios.post('https://api.veloo.io/render', {
+  templateId: '550e8400-e29b-41d4-a716-446655440000',
+  name: 'DirectVideo',
+  encoderConfig: { bitrate: 5000000 }
+}, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
+});
+
+console.log(response.data.renderId);
+```
+
 ### Responses
 
 | Code | Description |
@@ -849,6 +980,38 @@ Poll this endpoint to monitor render progress from submission to completion.
 | 200 | Status retrieved successfully |
 | 404 | Render not found or not owned by current user |
 | 401 | Missing or invalid API key |
+
+### Example usage
+
+[code-tabs: cURL, JS (Fetch), JS (Axios)]
+```bash
+# cURL
+curl -H "X-API-Key: your-api-key" \
+  https://api.veloo.io/render/{renderId}/status
+```
+```javascript
+// JavaScript (Fetch)
+const renderId = 'your-render-id';
+const response = await fetch(`https://api.veloo.io/render/${renderId}/status`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
+});
+
+const data = await response.json();
+console.log(data.status); // "pending", "processing", "completed", "failed"
+```
+```javascript
+// JavaScript (Axios)
+const renderId = 'your-render-id';
+const response = await axios.get(`https://api.veloo.io/render/${renderId}/status`, {
+  headers: {
+    'X-API-Key': 'your-api-key'
+  }
+});
+
+console.log(response.data.status);
+```
 
 ### Example Response (processing)
 
