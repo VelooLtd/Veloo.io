@@ -63,9 +63,9 @@
             });
 
             // Handle API special case
-            if (hash === 'api') {
+            if (hash === 'live-api') {
                 isApi = true;
-                activeLink = document.querySelector('a[href="#api"]');
+                activeLink = document.querySelector('a[href="#live-api"]');
             }
 
             // Default to Home if no hash match, or if hash is 'home' or empty
@@ -97,7 +97,7 @@
                 // Structure for API content
                 CONTENT_DIV.innerHTML = `
                     <div style="padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: rgba(5, 5, 7, 0.95);">
-                        <span style="font-weight: 600; color: var(--text-primary);">API Reference</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">Live API</span>
                         <a href="https://api.veloo.io/v1/simple" target="_blank" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
                             Open in new tab 
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
@@ -122,7 +122,7 @@
                         <iframe 
                             src="${apiUrl}" 
                             style="width: 100%; flex: 1; border: none;"
-                            title="API Reference"
+                            title="Live API"
                         ></iframe>
                     `;
                 } catch (err) {
@@ -133,7 +133,7 @@
                             <div style="width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; color: #ef4444;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
                             </div>
-                            <h3 style="margin: 0; color: #1f2937; font-size: 1.5rem;">API is Offline</h3>
+                            <h3 style="margin: 0; color: #1f2937; font-size: 1.5rem;">Live API is Offline</h3>
                             <p style="margin: 0; color: #6b7280; text-align: center; max-width: 400px;">
                                 We currently cannot reach the API documentation server. <br>Please check back later.
                             </p>
@@ -472,8 +472,21 @@
             <li class="nav-item"><a href="#tutorials" class="nav-link" data-src="/docs/tutorials.md">Tutorials</a></li>
             <li class="nav-item"><a href="#ae" class="nav-link" data-src="/docs/ae.md">After Effects</a></li>
             <li class="nav-item"><a href="#fonts" class="nav-link" data-src="/docs/fonts.md">Supported Fonts</a></li>
-            <li class="nav-item"><a href="#api" class="nav-link" data-src="API">API Reference</a></li>
+            <li class="nav-item"><a href="#api-reference" class="nav-link" data-src="/docs/api_reference.md">API
+                    Reference</a></li>
         </ul>
+
+        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+            <a href="#live-api" class="nav-link" data-src="API_LIVE"
+                style="display: flex; align-items: center; justify-content: center; background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); color: var(--primary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Live API
+            </a>
+        </div>
+
         <a href="index.html" class="back-link">
             ← Back to Landing
         </a>
