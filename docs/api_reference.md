@@ -1537,3 +1537,96 @@ User render time budget status.
 | `remainingMilliseconds` | int64 | Remaining render time |
 | `totalMilliseconds` | int64 | Total budget |
 | `usagePercentage` | double | Usage percentage |
+
+---
+
+# Encoder Configuration
+
+**Technical Specifications for encoderConfig Object**
+
+**Encoder Configuration Overview**
+This document outlines the technical specifications for the `encoderConfig` object used to configure the NVIDIA Encoder (NVENC) via a JSON setup file. The `encoderConfig` object allows for fine-tuned control over the hardware-accelerated video encoding process. It supports H.264 (AVC), H.265 (HEVC), and AV1 codecs.
+
+**Schema Example**
+```json
+"encoderConfig": {
+    "fpsNum": 30,
+    "fpsDenum": 1,
+    "res": [1920, 1080],
+    "bitrate": 12000000,
+    "maxBitrate": 15000000,
+    "rc": 0,
+    "gop": 30,
+    "idr": 30,
+    "codec": 0,
+    "preset": 4,
+    "profile": 2,
+    "level": 5,
+    "multiPassMode": 0,
+    "adaptive": 0,
+    "lookAheadDepth": 8,
+    "numBframes": 0
+}
+```
+
+**Property Definitions**
+| Property | Type | Requirement | Description |
+| :--- | :--- | :--- | :--- |
+| fpsNum | Integer | Optional | Frame rate numerator (e.g., 30). Defaults to source if omitted. |
+| fpsDenum | Integer | Optional | Frame rate denominator (e.g., 1). Used for fractional frame rates (e.g., 30000/1001 for 29.97 fps). |
+| res | Array [W, H] | Optional | Encoding resolution. Format: [width, height]. |
+| bitrate | Integer | Required | Target bitrate in bits per second (bps). In CBR, this is the constant rate; in VBR, this is the average/target rate. |
+| maxBitrate | Integer | Optional | Maximum bitrate in bps. Applicable only in VBR mode. |
+| rc | Integer | Optional | Rate Control Mode: 0: CBR, 1: VBR, 2: CQP (Const QP). |
+| gop | Integer | Optional | Group of Pictures: Distance between I-frames. |
+| idr | Integer | Optional | IDR Period: Frequency of Instantaneous Decoder Refresh frames. |
+| codec | Integer | Optional | 0: H.264 (AVC), 1: H.265 (HEVC), 2: AV1. |
+| preset | Integer | Optional | Maps to NVENC internal tuning/preset GUIDs (see Preset Mapping table). |
+| profile | Integer | Optional | Defines the codec toolset/features allowed (see Profile table). |
+| level | Integer | Optional | Defines the constraints on resolution, bitrate, and frame rate (see Level table). |
+| multiPassMode | Integer | Optional | 0: Disabled, 1: Two-Pass Quarter Res, 2: Two-Pass Full Res. |
+| adaptive | Integer | Optional | Enables lookahead-based adaptive encoding. 0: Off, 1: On. |
+| lookAheadDepth| Integer | Optional | Depth of the lookahead buffer (4–16). Higher values improve quality but increase VRAM usage. |
+| numBframes | Integer | Optional | Number of B-frames in a sequence (0, 1, or 2). |
+
+**Detailed Mapping Tables**
+
+**Preset & Tuning Mapping**
+The values below map the preset integer to the corresponding NVENC API GUIDs and Tuning Info.
+
+| Value | Preset Name | NVENC GUID Mapping | Tuning Info | Recommended RC |
+| :--- | :--- | :--- | :--- | :--- |
+| 0 | HIGH_PERFORMANCE | NV_ENC_PRESET_P2_GUID | HIGH_QUALITY | VBR (1 or 2 pass) |
+| 1 | HIGH_QUALITY | NV_ENC_PRESET_P5_GUID | HIGH_QUALITY | VBR (1 or 2 pass) |
+| 2 | LOW_LATENCY | NV_ENC_PRESET_P4_GUID | LOW_LATENCY | CBR |
+| 3 | LL_HIGH_PERFORMANCE | NV_ENC_PRESET_P2_GUID | ULTRA_LOW_LATENCY | CBR |
+| 4 | LL_HIGH_QUALITY | NV_ENC_PRESET_P4_GUID | LOW_LATENCY | CBR (1 or 2 pass) |
+| 5 | LOSSLESS | NV_ENC_PRESET_P3_GUID | LOSSLESS | CQP |
+
+**Codec Profile (profile) Mapping**
+| Value | Profile Name | Codec Compatibility |
+| :--- | :--- | :--- |
+| 0 | PROFILE_AUTOSELECT | All |
+| 1 | PROFILE_H264_BASELINE | H.264 |
+| 2 | PROFILE_H264_MAIN | H.264 |
+| 3 | PROFILE_H264_HIGH | H.264 |
+| 8 | PROFILE_H265_MAIN | H.265 |
+| 9 | PROFILE_H265_MAIN10 | H.265 |
+| 10 | PROFILE_AV1_MAIN | AV1 |
+
+**Codec Level (level) Mapping (H.264 / HEVC/AV1)**
+| Value | H.264 Level | HEVC/AV1 Level |
+| :--- | :--- | :--- |
+| 0 | AUTO | AUTO |
+| 1 | 4 | 4 |
+| 2 | 4.1 | 4.1 |
+| 3 | 4.2 | 5 |
+| 4 | 5 | 5.1 |
+| 5 | 5.1 | 5.2 |
+
+**Technical Implementation Notes**
+- **Lookahead Resource Allocation**: When adaptive is enabled, the encoder allocates render surfaces equal to the video frame dimensions for each unit of `lookAheadDepth`.
+- **Warning**: Using a depth of 16 at 4K resolution requires significant VRAM. Monitor GPU memory usage when these settings are active.
+- **Latency vs Quality**:
+    - For Live Streaming: Use `numBframes: 0` and `preset: 4` (Low Latency High Quality).
+    - For Archiving: Use `multiPassMode: 2` (Full Resolution) and `preset: 1` (High Quality).
